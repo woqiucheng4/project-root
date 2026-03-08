@@ -3,7 +3,9 @@ Task Types
 create_api
 create_ui
 create_module
+create_saas
 create_service
 fix_bug
 write_tests
 review_code
+plan_feature
