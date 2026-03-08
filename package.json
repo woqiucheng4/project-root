@@ -1,0 +1,14 @@
+{
+  "name": "ai-cto-saas-starter",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "echo run apps",
+    "build": "echo build all",
+    "lint": "echo lint"
+  }
+}
