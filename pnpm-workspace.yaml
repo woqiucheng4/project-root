@@ -1,0 +1,10 @@
+packages:
+  - 'apps/*'
+  - 'services/*'
+  - 'packages/*'
+  - 'ai-agents/*'
+  - 'ai-runtime'
+  - 'ai-runtime/*'
+  - 'devops/*'
+  - 'infrastructure/*'
+  - 'docs/*'

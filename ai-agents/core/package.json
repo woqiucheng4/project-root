@@ -1,0 +1,19 @@
+{
+  "name": "@repo/ai-agents",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "bullmq": "^5.0.0",
+    "uuid": "^13.0.0",
+    "winston": "^3.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^11.0.0",
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@repo/ai-runtime",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@repo/ai-agents": "workspace:*",
+    "bullmq": "^5.0.0",
+    "ioredis": "^5.3.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "ts-node": "^10.9.2",
+    "@types/node": "^20.0.0"
+  }
+}

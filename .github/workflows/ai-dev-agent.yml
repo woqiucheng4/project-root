@@ -1,0 +1,64 @@
+name: AI Dev Agent Loop
+
+on:
+  workflow_dispatch:
+    inputs:
+      requirements:
+        description: 'Describe the feature or bugfix requirements for the AI Agent'
+        required: true
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  autonomous-coding-loop:
+    name: Run AI Agents
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Build Docker AI Sandbox
+        run: |
+          cd devops/sandbox
+          docker build -t ai-sandbox:latest .
+
+      - name: Execute Agent Coding Pipeline
+        env:
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          echo "Starting Autonomous Coding Engine..."
+          # The agent will capture the task, generate code, run via Docker Sandbox QA, and open a PR.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+             TASK="${{ github.event.inputs.requirements }}"
+          else
+             TASK="${{ github.event.issue.title }}: ${{ github.event.issue.body }}"
+          fi
+          
+          # Pass task to the CLI handler (example script trigger)
+          # pnpm -F @repo/ai-runtime start --task "$TASK"
+          echo "Processing task: $TASK"

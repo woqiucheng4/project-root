@@ -1,0 +1,17 @@
+{
+  "name": "@repo/cli",
+  "version": "1.0.0",
+  "description": "SaaS module generator CLI",
+  "bin": {
+    "generate": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "generate": "ts-node src/index.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "ts-node": "^10.9.2",
+    "@types/node": "^20.0.0"
+  }
+}

@@ -1,0 +1,35 @@
+# AI Autonomous Coding Loop - Global Configuration & Rules
+
+version: '1.0'
+
+agents:
+  global_rules:
+    - rule_id: arch-1
+      description: "Always follow Clean Architecture principles. Separate domain logic from infrastructure concerns. Use dependency injection and abstract interfaces."
+      enforcement: strict
+
+    - rule_id: testing-1
+      description: "Always generate tests. Use Vitest for unit and integration testing inside packages/core-services. Use Playwright for E2E testing inside apps/web."
+      enforcement: strict
+
+    - rule_id: docs-1
+      description: "Always update documentation. Any new module, function, or API endpoint must be accompanied by inline JSDoc comments and updates to the README.md files."
+      enforcement: strict
+
+    - rule_id: code-style-1
+      description: "Use small modular components. Functions should have a single responsibility. React components should be broken down into reusable tailored parts using Tailwind CSS."
+      enforcement: strict
+
+    - rule_id: structure-1
+      description: "Follow the project folder structure strictly. Monorepo bounded contexts: 'apps/web' for frontend/Next.js routes, 'packages/core-services' for business logic, 'packages/database' for Prisma/PostgreSQL, 'ai-agents' for LLM logic."
+      enforcement: strict
+
+# AI Tooling Definitions
+workflows:
+  on_new_feature:
+    - analysis: "Analyze user requirements against global_rules."
+    - generation: "Generate API and UI components in apps/web."
+    - services: "Implement core business logic in packages/core-services."
+    - tests: "Write associated Vitest and Playwright tests."
+    - qa: "Execute Docker Sandbox tests and analyze failures."
+    - doc_update: "Trigger DOC Agent to record architecture decisions in docs/."
