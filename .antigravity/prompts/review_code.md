@@ -1,8 +1,6 @@
-Review code.
+# DEPRECATED
 
-Check:
+This file is superseded by `.antigravity/prompts/review.md`.
+Use that file for all code review tasks.
 
-bugs
-performance
-security
-maintainability
+Do not delete this file — kept for reference.
