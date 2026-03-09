@@ -1,10 +1,18 @@
 import { BaseAgent } from '../lib/agent';
 import { AgentTask } from '../lib/queue';
 import { logger } from '../lib/logger';
+import OpenAI from 'openai';
+import fs from 'fs/promises';
+import path from 'path';
 
 export class DevAgent extends BaseAgent {
+  private openai: OpenAI;
+
   constructor() {
     super('DEV');
+    this.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY, // Relies on OPENAI_API_KEY in env
+    });
   }
 
   async execute(task: AgentTask): Promise<void> {
@@ -12,36 +20,79 @@ export class DevAgent extends BaseAgent {
     const { requirements, context } = task.payload;
 
     try {
-      logger.info(`[DevAgent] Analyzing and generating code for: ${requirements.substring(0, 50)}...`);
+      logger.info(`[DevAgent] Analyzing and generating code via OpenAI for: ${requirements.substring(0, 50)}...`);
       logger.info(`[DevAgent] AI INSTRUCTION: "Must automatically generate Vitest unit/integration tests and Playwright E2E tests for all new features to ensure Sandbox QA runs successfully."`);
 
-      
-      // Simulate Deep Learning generation time
-      await new Promise(res => setTimeout(res, 2000));
+      // 1. Read the global AI rules
+      const repoRootDir = path.resolve(__dirname, '../../../../../');
+      let configContent = '';
+      try {
+        const configPath = path.join(repoRootDir, 'ai-config.yaml');
+        configContent = await fs.readFile(configPath, 'utf-8');
+      } catch (err) {
+        logger.warn('[DevAgent] Could not read ai-config.yaml. Using fallback rules.');
+      }
 
-      // As proof of concept, DevAgent "generates" a test failure scenario
-      // Or a successful scenario based on AI analysis
-      const mockTargetFile = 'packages/core-services/src/analytics/service.ts';
-      const mockGeneratedCode = `import { prisma } from '@repo/database';
+      // 2. Build prompts
+      const systemPrompt = `You are an elite Autonomous Backend/Frontend Senior Developer Agent part of an automated coding loop.
+Your task is to implement the exact code requested by the user.
 
-export class AnalyticsService {
-  async trackEvent(eventName: string, userId?: string, payload?: any) {
-    // Code completely synthesized by the AI DevAgent
-    // The Sandbox QA element will execute this exact code
-    return prisma.event.create({
-      data: { eventName, userId, payload }
-    });
-  }
-}`;
+GLOBAL REPOSITORY RULES:
+${configContent}
+
+OUTPUT FORMAT:
+You MUST return your answer as a pure, valid JSON object (without any Markdown formatting, like \`\`\`json).
+The response must exactly match this interface:
+{
+  "targetFile": "path/relative/to/monorepo/root/filename.ts",
+  "code": "/* the fully completed raw source code to be injected */"
+}
+`;
+
+      const userPrompt = `Requirements to implement:
+${requirements}
+
+Additional Error/Context:
+${JSON.stringify(context || {}, null, 2)}
+`;
+
+      // 3. Call Large Language Model
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-4o',
+        temperature: 0.2, // Low temperature for code consistency
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ]
+      });
+
+      const responseContent = response.choices[0].message.content;
+      if (!responseContent) {
+        throw new Error('LLM returned an empty response.');
+      }
+
+      // 4. Parse the LLM Generation
+      const parsedOutput = JSON.parse(responseContent);
+      const generatedTargetFile = parsedOutput.targetFile;
+      const generatedCode = parsedOutput.code;
+
+      if (!generatedTargetFile || !generatedCode) {
+        throw new Error('LLM JSON output did not contain valid targetFile or code keys.');
+      }
+
+      logger.info('[DevAgent] Code synthesis successful, delegating to Docker Sandbox via QAAgent', { 
+        taskId: task.id, 
+        targetFile: generatedTargetFile 
+      });
       
-      logger.info('[DevAgent] Code synthesis successful, delegating to Docker Sandbox via QAAgent', { taskId: task.id });
-      
+      // 5. Emit job to QA pipeline
       await this.emitTask({
         id: `qa-${Date.now()}`,
         type: 'QA',
         payload: {
-          code: mockGeneratedCode,
-          targetFile: mockTargetFile,
+          code: generatedCode,
+          targetFile: generatedTargetFile,
           originalRequirements: requirements,
           parentTaskId: task.id
         }

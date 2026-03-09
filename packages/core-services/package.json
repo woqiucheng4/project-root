@@ -9,9 +9,11 @@
   },
   "dependencies": {
     "@repo/database": "workspace:*",
+    "bcrypt": "^6.0.0",
     "ioredis": "^5.3.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20.0.0",
     "@vitest/coverage-v8": "^4.0.18",
     "ts-node": "^10.9.2",
