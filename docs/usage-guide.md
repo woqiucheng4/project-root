@@ -6,7 +6,6 @@
 
 ## 🏗 工程目录结构解读
 
-
 - **`apps/`**: 面向终端用户的应用（例如 Web 控制台 Dashboard 和 CLI 命令行工具）。
 - **`services/`**: 后端微服务（例如 API 网关、数据库处理服务等）。
 - **`packages/`**: 跨端共享代码库（包含共享业务逻辑、数据库 Prisma 模型定义、UI 组件库、工具库等）。
@@ -97,3 +96,10 @@ pnpm run dev
 1. 进入 `ai-agents/core/src/` 创建新的文件夹，继承 `BaseAgent` 类。
 2. 在 `execute(task: AgentTask)` 方法中编写业务逻辑。如果涉及大语言模型，可以使用 `import { generateWithFallback } from '../lib/llm'`，享受内置的离线切换特性。
 3. 在 `ai-runtime` 的任务分配器（Queue Orchestrator）中注册你新 Agent 的队列 Topic。
+
+---
+
+## 🌟 本地大模型开发总结
+
+通过使用本地大语言模型，如 Ollama，您可以在没有网络连接的情况下继续进行开发。这不仅提高了开发效率，还增强了系统的稳定性和可靠性。确保在 `.env` 文件中正确配置 `LOCAL_OPENAI_BASE_URL` 和 `LOCAL_OPENAI_MODEL`，并设置 `OFFLINE_MODE=true` 以强制使用本地模型。
+
