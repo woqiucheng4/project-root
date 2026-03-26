@@ -1,18 +1,13 @@
 import { BaseAgent } from '../lib/agent';
 import { AgentTask } from '../lib/queue';
 import { logger } from '../lib/logger';
-import OpenAI from 'openai';
+import { generateWithFallback } from '../lib/llm';
 import fs from 'fs/promises';
 import path from 'path';
 
 export class DevAgent extends BaseAgent {
-  private openai: OpenAI;
-
   constructor() {
     super('DEV');
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY, // Relies on OPENAI_API_KEY in env
-    });
   }
 
   async execute(task: AgentTask): Promise<void> {
@@ -56,9 +51,8 @@ Additional Error/Context:
 ${JSON.stringify(context || {}, null, 2)}
 `;
 
-      // 3. Call Large Language Model
-      const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+      // 3. Call Large Language Model using Fallback Wrapper
+      const responseContent = await generateWithFallback({
         temperature: 0.2, // Low temperature for code consistency
         response_format: { type: 'json_object' },
         messages: [
@@ -67,7 +61,6 @@ ${JSON.stringify(context || {}, null, 2)}
         ]
       });
 
-      const responseContent = response.choices[0].message.content;
       if (!responseContent) {
         throw new Error('LLM returned an empty response.');
       }

@@ -6,3 +6,6 @@ build/
 *.log
 coverage/
 .turbo/
+.aider*
+kaogong/
+demo/
