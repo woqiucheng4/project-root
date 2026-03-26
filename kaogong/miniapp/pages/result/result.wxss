@@ -1,0 +1,40 @@
+.title-area { text-align: center; margin-bottom: 32rpx; }
+.page-title { font-size: 48rpx; font-weight: bold; display: block; }
+.report-id { font-size: 22rpx; color: #9ca3af; display: block; margin-top: 8rpx; word-break: break-all; }
+.bonus-card { margin-bottom: 32rpx; }
+.section-title { font-size: 32rpx; font-weight: bold; display: block; margin-bottom: 20rpx; }
+.level-row { display: flex; align-items: center; gap: 16rpx; margin-bottom: 20rpx; }
+.level-badge { color: #fff; font-weight: bold; padding: 12rpx 24rpx; border-radius: 12rpx; font-size: 28rpx; }
+.level-desc { font-size: 28rpx; }
+.direction-box { padding: 20rpx; background: rgba(59,130,246,0.1); border-radius: 12rpx; border-left: 6rpx solid #3b82f6; margin-bottom: 20rpx; }
+.direction-label { color: #3b82f6; font-weight: bold; display: block; margin-bottom: 8rpx; font-size: 26rpx; }
+.tip-text { color: #9ca3af; font-size: 28rpx; line-height: 1.6; }
+
+/* 付费墙 */
+.paywall { position: relative; border-radius: 24rpx; overflow: hidden; margin-top: 32rpx; }
+.paywall-blur { filter: blur(12rpx); opacity: 0.5; min-height: 400rpx; padding: 40rpx; }
+.blur-text { color: #9ca3af; font-size: 28rpx; line-height: 2; }
+.paywall-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(to bottom, rgba(13,17,23,0.2), rgba(13,17,23,0.95) 60%); padding: 40rpx; text-align: center; }
+.paywall-title { font-size: 40rpx; font-weight: bold; margin-bottom: 16rpx; }
+.paywall-desc { font-size: 26rpx; color: #9ca3af; margin-bottom: 32rpx; line-height: 1.6; }
+.price-row { display: flex; align-items: baseline; gap: 12rpx; margin-bottom: 32rpx; }
+.price-now { font-size: 56rpx; font-weight: bold; color: #fff; }
+.price-old { font-size: 28rpx; color: #9ca3af; text-decoration: line-through; }
+.btn-pay { background: linear-gradient(135deg, #f59e0b, #ef4444) !important; color: #fff !important; font-weight: bold; font-size: 32rpx; border-radius: 999rpx; padding: 24rpx 60rpx; border: none; box-shadow: 0 8rpx 24rpx rgba(239,68,68,0.4); }
+
+/* 已付费区域 */
+.section { margin-bottom: 24rpx; }
+.section-body { color: #9ca3af; font-size: 28rpx; line-height: 1.6; }
+.job-card { padding: 24rpx; background: rgba(255,255,255,0.03); border-radius: 12rpx; border: 2rpx solid rgba(255,255,255,0.08); margin-bottom: 16rpx; }
+.job-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8rpx; }
+.job-rank { font-size: 30rpx; font-weight: bold; }
+.job-score { color: #8b5cf6; font-weight: bold; font-size: 30rpx; }
+.job-meta { display: flex; gap: 24rpx; color: #9ca3af; font-size: 26rpx; }
+.pit-item { margin-bottom: 12rpx; color: #9ca3af; font-size: 28rpx; }
+.study-item { margin-bottom: 16rpx; font-size: 28rpx; color: #9ca3af; }
+
+/* loading */
+.loading-area { display: flex; flex-direction: column; align-items: center; padding: 80rpx 0; }
+.spinner { width: 64rpx; height: 64rpx; border: 6rpx solid rgba(255,255,255,0.08); border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 24rpx; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: #9ca3af; font-size: 28rpx; }

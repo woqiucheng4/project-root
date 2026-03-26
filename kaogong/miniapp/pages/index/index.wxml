@@ -1,0 +1,33 @@
+<view class="container">
+  <!-- 头部 -->
+  <view class="hero">
+    <text class="hero-title">别让<text class="text-gradient">选岗失误</text>毁了一年努力</text>
+    <text class="hero-desc">输入您的个人条件，AI为您提供最理性的岗位申报建议。</text>
+  </view>
+
+  <!-- 步骤指示器 -->
+  <step-indicator current="{{currentStep}}" steps="{{stepTitles}}" />
+
+  <!-- 表单区域 -->
+  <view class="glass-panel form-area">
+    <block wx:for="{{currentFields}}" wx:key="name">
+      <form-field 
+        name="{{item.name}}" 
+        definition="{{item.def}}" 
+        value="{{formData[item.name]}}"
+        error="{{errors[item.name]}}"
+        bind:change="onFieldChange"
+      />
+    </block>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="btn-group">
+    <button class="btn-secondary" wx:if="{{currentStep > 0}}" bindtap="prevStep">上一步</button>
+    <view wx:else></view>
+    <button class="btn-primary" wx:if="{{currentStep < totalSteps - 1}}" bindtap="nextStep">下一步</button>
+    <button class="btn-primary btn-submit" wx:else bindtap="submitForm" loading="{{submitting}}">
+      {{submitting ? '分析中...' : '生成测评报告'}}
+    </button>
+  </view>
+</view>

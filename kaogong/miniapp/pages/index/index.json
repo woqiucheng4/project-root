@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "step-indicator": "/components/step-indicator/step-indicator",
+    "form-field": "/components/form-field/form-field"
+  }
+}

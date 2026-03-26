@@ -1,0 +1,28 @@
+.hero {
+  text-align: center;
+  padding: 40rpx 0 32rpx;
+}
+.hero-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 16rpx;
+}
+.hero-desc {
+  font-size: 28rpx;
+  color: #9ca3af;
+  display: block;
+}
+.form-area {
+  margin-top: 32rpx;
+}
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40rpx;
+  padding-bottom: 60rpx;
+}
+.btn-submit {
+  background: linear-gradient(135deg, #f59e0b, #ef4444) !important;
+  box-shadow: 0 8rpx 24rpx rgba(239, 68, 68, 0.4) !important;
+}

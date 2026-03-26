@@ -1,0 +1,16 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/result/result",
+    "pages/payment/payment"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#0d1117",
+    "navigationBarTitleText": "AI公考上岸助手",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0d1117",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

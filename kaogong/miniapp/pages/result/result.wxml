@@ -1,0 +1,87 @@
+<view class="container">
+  <view class="title-area">
+    <text class="page-title text-gradient">你的专属考情分析</text>
+    <text class="report-id">防伪标识码：{{reportId}}</text>
+  </view>
+
+  <!-- 免费区：红利等级 -->
+  <view class="glass-panel bonus-card" wx:if="{{report}}">
+    <text class="section-title">基础分析结果</text>
+    <view class="level-row">
+      <view class="level-badge" style="background: {{levelColor}}; box-shadow: 0 8rpx 24rpx {{levelColor}}66;">
+        {{report.free.bonusLevel}} 梯队
+      </view>
+      <text class="level-desc">你的身份红利评级</text>
+    </view>
+    <view class="direction-box">
+      <text class="direction-label">推荐大方向</text>
+      <text>{{report.free.direction}}</text>
+    </view>
+    <view class="tip-text">
+      <text style="font-weight:bold;">顾问寄语：</text>{{report.free.briefTip}}
+    </view>
+  </view>
+
+  <!-- 付费墙 -->
+  <view wx:if="{{report && !report.isPaid}}" class="paywall">
+    <view class="paywall-blur glass-panel">
+      <text class="blur-text">██ Top5岗位推荐 ██ 竞争烈度分析 ██ 避坑建议 ██ 备考策略 ██</text>
+    </view>
+    <view class="paywall-overlay">
+      <text class="paywall-title text-gradient">解锁完整报考研判报告</text>
+      <text class="paywall-desc">包含 Top5 岗位推荐、竞争烈度图解、AI避坑排雷指令及备考策略。</text>
+      <view class="price-row">
+        <text class="price-now">¥9.9</text>
+        <text class="price-old">¥99.0</text>
+      </view>
+      <button class="btn-pay" bindtap="goPayment">立即解锁完整报告</button>
+    </view>
+  </view>
+
+  <!-- 已付费：完整报告 -->
+  <block wx:if="{{report && report.isPaid && report.paid}}">
+    <view class="glass-panel section">
+      <text class="section-title">📊 竞争环境核心评估</text>
+      <text class="section-body">{{report.paid.competitionAnalysis}}</text>
+    </view>
+
+    <view class="glass-panel section">
+      <text class="section-title">🏆 Top 5 报考决断</text>
+      <view wx:for="{{report.paid.topJobs}}" wx:key="type" class="job-card">
+        <view class="job-header">
+          <text class="job-rank">#{{index+1}} {{item.type}}</text>
+          <text class="job-score">{{item.finalScore}} 分</text>
+        </view>
+        <view class="job-meta">
+          <text>匹配度: {{item.match}}%</text>
+          <text>上岸概率: {{item.successRate}}%</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="glass-panel section">
+      <text class="section-title" style="color:#ef4444;">⚠️ 选岗避坑指令</text>
+      <view wx:for="{{report.paid.avoidPitfalls}}" wx:key="*this" class="pit-item">
+        <text>• {{item}}</text>
+      </view>
+    </view>
+
+    <view class="glass-panel section">
+      <text class="section-title" style="color:#10b981;">🎯 终极备考策略</text>
+      <view class="study-item">
+        <text style="font-weight:bold;">时间线：</text>
+        <text>{{report.paid.studyPlan.timeline}}</text>
+      </view>
+      <view class="study-item">
+        <text style="font-weight:bold;">提分法则：</text>
+        <text>{{report.paid.studyPlan.focus}}</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-area">
+    <view class="spinner"></view>
+    <text class="loading-text">系统正在解密您的专属报告...</text>
+  </view>
+</view>

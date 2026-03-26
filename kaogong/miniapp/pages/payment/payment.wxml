@@ -1,0 +1,17 @@
+<view class="container">
+  <view class="glass-panel pay-card">
+    <text class="pay-title text-gradient">收银订单台</text>
+    
+    <view class="order-box">
+      <text class="order-desc">AI 高维分析测算服务单据</text>
+      <text class="order-price">￥9.90</text>
+      <text class="order-id">防抵赖追踪编号：{{reportId}}</text>
+    </view>
+
+    <button class="btn-pay-main" bindtap="handlePay" loading="{{processing}}" disabled="{{processing}}">
+      {{processing ? '处理中...' : '💳 确认支付'}}
+    </button>
+
+    <text class="pay-note">※ 支付后「Top5 优选岗位 + AI 避坑排雷指令」将完整解锁。</text>
+  </view>
+</view>

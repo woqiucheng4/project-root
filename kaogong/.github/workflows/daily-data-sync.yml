@@ -1,0 +1,61 @@
+name: "🌐 Auto Sync: 每日公考数据全网雷达补齐计划"
+
+on:
+  schedule:
+    # 每天凌晨 3 点半 (UTC: 19:30) 执行，避开各大平台的高防期
+    - cron: '30 19 * * *'
+  workflow_dispatch:
+    # 允许随时手动一键触发强制全网刷新
+
+jobs:
+  scrape-and-sync-jobs:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js 环境
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: 安装相关依赖 (解析/无头爬虫引擎)
+        run: |
+          npm install
+          npm install xlsx puppeteer cheerio axios
+
+      - name: 🚀 执行公考热度每日探测 (今日捡漏神器)
+        run: node scripts/crawl-daily-heat.js
+
+      - name: 🕵️ 执行全网省考 Excel 雷达巡查下载 (核心弹药库)
+        run: node scripts/auto-discover-provincial.js
+
+      - name: 🤖 生成解析文件并检查增量数据
+        id: check_changes
+        run: |
+          if [[ -n $(git status -s ./data) ]]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "✨ 雷达成功捕获到新省考或考情波动"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "💤 今日考情平静，无新增发文"
+          fi
+
+      - name: 💾 将自动抓取的省市新爆破数据提交入库
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "bot@kaogong-ai.ai"
+          git config --local user.name "KaoGong System Bot"
+          git add ./data/*
+          git commit -m "chore(data): 🤖 Auto-sync: Capture newest provincial exam stats and leak jobs"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔔 触发微信专属管家盯盘通知下发
+        run: node scripts/push-daily-alerts.js
+        env:
+          WX_APP_ID: ${{ secrets.WX_APP_ID }}
+          WX_APP_SECRET: ${{ secrets.WX_APP_SECRET }}

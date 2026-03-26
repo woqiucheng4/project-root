@@ -1,0 +1,11 @@
+{
+  "crawlTime": "2026-03-26T06:17:13.479Z",
+  "sources": [
+    {
+      "url": "http://bm.scs.gov.cn/pp/gkweb/core/web/ui/business/article/articleList.html?_page=1",
+      "status": "failed",
+      "code": 404
+    }
+  ],
+  "data": {}
+}

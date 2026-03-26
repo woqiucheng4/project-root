@@ -1,0 +1,38 @@
+<!-- 通用表单字段组件 -->
+<view class="field">
+  <text class="field-label">{{definition.label}} <text wx:if="{{definition.required}}" class="required">*</text></text>
+  
+  <!-- 文本输入 -->
+  <input wx:if="{{definition.type === 'text' || definition.type === 'number'}}" 
+    class="field-input {{error ? 'has-error' : ''}}"
+    type="{{definition.type === 'number' ? 'number' : 'text'}}"
+    value="{{value}}"
+    placeholder="{{definition.placeholder || ''}}"
+    bindinput="onInput"
+    data-name="{{name}}"
+  />
+
+  <!-- picker 选择器 -->
+  <picker wx:elif="{{definition.type === 'picker'}}" 
+    range="{{definition.options}}" 
+    bindchange="onPickerChange" 
+    data-name="{{name}}"
+  >
+    <view class="field-input picker-display {{error ? 'has-error' : ''}}">
+      {{value || '请选择...'}}
+    </view>
+  </picker>
+
+  <!-- 单选按钮组 -->
+  <view wx:elif="{{definition.type === 'radio'}}" class="radio-group">
+    <view wx:for="{{definition.options}}" wx:key="label" wx:for-item="opt"
+      class="radio-item {{value === opt.value ? 'selected' : ''}}"
+      bindtap="onRadioTap" data-name="{{name}}" data-value="{{opt.value}}"
+    >
+      <view class="radio-dot {{value === opt.value ? 'active' : ''}}"></view>
+      <text>{{opt.label}}</text>
+    </view>
+  </view>
+
+  <text wx:if="{{error}}" class="field-error">{{error}}</text>
+</view>

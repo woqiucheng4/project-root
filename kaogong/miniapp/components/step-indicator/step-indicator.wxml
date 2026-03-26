@@ -1,0 +1,9 @@
+<!-- 步骤指示器组件 -->
+<view class="steps">
+  <view class="step-line" style="width: {{(current / (steps.length - 1)) * 100}}%"></view>
+  <view class="step-line-bg"></view>
+  <view wx:for="{{steps}}" wx:key="index" class="step-item">
+    <view class="step-circle {{index <= current ? 'active' : ''}}">{{index + 1}}</view>
+    <text class="step-label {{index <= current ? 'active' : ''}}">{{item}}</text>
+  </view>
+</view>
