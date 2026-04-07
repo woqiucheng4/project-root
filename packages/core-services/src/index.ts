@@ -4,5 +4,3 @@ export * from './analytics/service';
 export * from './notifications/service';
 export * from './feature-flags/service';
 export * from './file-storage/service';
-
-export * from './test-module/service';

@@ -12,7 +12,7 @@ export class DevAgent extends BaseAgent {
 
   async execute(task: AgentTask): Promise<void> {
     logger.info('[DevAgent] Started code generation', { taskId: task.id });
-    const { requirements, context } = task.payload;
+    const { requirements, prd, architectureSpec, context } = task.payload;
 
     try {
       logger.info(`[DevAgent] Analyzing and generating code via OpenAI for: ${requirements.substring(0, 50)}...`);
@@ -30,7 +30,7 @@ export class DevAgent extends BaseAgent {
 
       // 2. Build prompts
       const systemPrompt = `You are an elite Autonomous Backend/Frontend Senior Developer Agent part of an automated coding loop.
-Your task is to implement the exact code requested by the user.
+Your task is to implement the exact code requested by the user, strictly following the provided Architecture Design Document and PRD.
 
 GLOBAL REPOSITORY RULES:
 ${configContent}
@@ -44,7 +44,13 @@ The response must exactly match this interface:
 }
 `;
 
-      const userPrompt = `Requirements to implement:
+      const userPrompt = `Architecture Design Specification:
+${architectureSpec || 'Not Provided (Legacy Flow)'}
+
+Product Requirements Document (PRD):
+${prd || 'Not Provided (Legacy Flow)'}
+
+Original Requirements / Task Description:
 ${requirements}
 
 Additional Error/Context:

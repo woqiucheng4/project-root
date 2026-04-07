@@ -3,7 +3,7 @@ import { logger } from './logger';
 
 export interface AgentTask {
   id: string;
-  type: 'DEV' | 'QA' | 'REFACTOR' | 'PR' | 'DOC';
+  type: 'PM' | 'ARCHITECT' | 'DEV' | 'QA' | 'REFACTOR' | 'PR' | 'DOC';
   payload: any;
 }
 
