@@ -78,3 +78,8 @@ pnpm format
 
 - **`packages/workflow`**：工作流状态（Prisma）与 BullMQ 入队封装，供 Web API 与 `ai-runtime` 共用。
 - **`apps/web`**：`/workflows` 控制台与 `/api/workflows/*` API。
+- **`packages/mcp-workflow`**：面向 **Cursor（及其他 MCP 客户端）** 的 stdio MCP 服务，Tools 直接调用 `@repo/workflow`，与 Web 共用同一流水线。配置说明见 [`docs/mcp-cursor.md`](docs/mcp-cursor.md)。根目录脚本：`pnpm mcp:workflow`（需先 `pnpm build`）。
+
+## Cursor 聊天 + MCP（推荐集成方式）
+
+在 Cursor 里对话时由 **内置模型** 决定是否调用 MCP Tools；Tools 只负责 **写数据库 / 入 Redis 队列**，与浏览器控制台等价。请先启动 Postgres、Redis、`ai-runtime`，再在 Cursor MCP 设置里注册 `packages/mcp-workflow/dist/index.js`（详见 `docs/mcp-cursor.md`）。
