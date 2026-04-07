@@ -7,7 +7,7 @@ export class PRAgent extends BaseAgent {
     super('PR');
   }
 
-  async execute(task: AgentTask): Promise<void> {
+  async execute(task: AgentTask): Promise<unknown> {
     logger.info('[PRAgent] Started Pull Request creation', { taskId: task.id });
     const { approvedCode, parentTaskId } = task.payload;
 
@@ -35,5 +35,6 @@ export class PRAgent extends BaseAgent {
       logger.error('[PRAgent] PR creation failed', { error: error.message });
       throw error;
     }
+    return undefined;
   }
 }

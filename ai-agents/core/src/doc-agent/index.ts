@@ -7,7 +7,7 @@ export class DocAgent extends BaseAgent {
     super('DOC');
   }
 
-  async execute(task: AgentTask): Promise<void> {
+  async execute(task: AgentTask): Promise<unknown> {
     logger.info('[DocAgent] Started documentation update', { taskId: task.id });
     const { codeChanges, prLink } = task.payload;
 
@@ -25,5 +25,6 @@ export class DocAgent extends BaseAgent {
       logger.error('[DocAgent] Documentation process failed', { error: error.message });
       throw error;
     }
+    return undefined;
   }
 }

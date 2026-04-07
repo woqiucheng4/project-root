@@ -118,3 +118,49 @@ model File {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// ==========================================
+// Module: Autonomous workflow (SaaS pipeline)
+// ==========================================
+enum WorkflowStatus {
+  DRAFT
+  PM_RUNNING
+  PRD_REVIEW
+  ARCHITECT_RUNNING
+  SPEC_REVIEW
+  DEVELOPMENT
+  QA_FIXING
+  UAT_REVIEW
+  COMPLETED
+  FAILED
+}
+
+model Workflow {
+  id                   String          @id @default(cuid())
+  title                String?
+  status               WorkflowStatus  @default(DRAFT)
+  requirementsText     String          @db.Text
+  prdMarkdown          String?         @db.Text
+  prdFilePath          String?
+  architectureMarkdown String?         @db.Text
+  architectureFilePath String?
+  todosJson            String?         @db.Text
+  currentTodoIndex     Int             @default(0)
+  uatPreviewHint       String?         @db.Text
+  failReason           String?         @db.Text
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  messages WorkflowMessage[]
+}
+
+model WorkflowMessage {
+  id           String   @id @default(cuid())
+  workflowId   String
+  workflow     Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  role         String
+  content      String   @db.Text
+  createdAt    DateTime @default(now())
+
+  @@index([workflowId])
+}
+

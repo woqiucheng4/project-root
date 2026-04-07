@@ -33,3 +33,48 @@ pnpm build
 # Run formatting
 pnpm format
 ```
+
+## 自动编程 SaaS 工作流（验证）
+
+人机协同闭环：**需求 → PM/讨论 → PRD 确认 → 架构与 TODO 确认 → 开发/测试循环 → 验收**。
+
+1. 启动基础设施（PostgreSQL + Redis）：
+
+   ```bash
+   docker compose -f docker-compose.workflow.yml up -d
+   ```
+
+2. 复制环境变量（仓库根目录 `.env.example` → `.env`），设置 `DATABASE_URL`、`REDIS_*`、`OPENAI_API_KEY`，并设置 **`MONOREPO_ROOT`** 为**本仓库绝对路径**（从 `apps/web` 发队列任务时 agents 依赖它解析 `docs/prd` 等路径）。
+
+3. 同步数据库 schema：
+
+   ```bash
+   pnpm -F @repo/database exec prisma db push
+   ```
+
+4. 安装并构建（若尚未执行）：
+
+   ```bash
+   pnpm install && pnpm build
+   ```
+
+5. 终端 A — 运行队列引擎（需常驻）：
+
+   ```bash
+   pnpm -F @repo/ai-runtime dev
+   ```
+
+6. 终端 B — 在 **monorepo 根目录**启动 Web（保证 `MONOREPO_ROOT` 或进程 cwd 正确）：
+
+   ```bash
+   pnpm -F web dev
+   ```
+
+7. 浏览器打开 `http://localhost:3000` → **进入工作流**，创建需求后按页面步骤操作即可。
+
+说明：QA 沙箱依赖本机 **Docker** 与 **rsync**（或回退 `cp`）；未配置 LLM 密钥时 PM/架构/开发会失败，工作流状态会进入 `FAILED` 并记录原因。
+
+## 新增 / 关键包
+
+- **`packages/workflow`**：工作流状态（Prisma）与 BullMQ 入队封装，供 Web API 与 `ai-runtime` 共用。
+- **`apps/web`**：`/workflows` 控制台与 `/api/workflows/*` API。

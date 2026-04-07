@@ -7,7 +7,7 @@ export class RefactorAgent extends BaseAgent {
     super('REFACTOR');
   }
 
-  async execute(task: AgentTask): Promise<void> {
+  async execute(task: AgentTask): Promise<unknown> {
     logger.info('[RefactorAgent] Started code refactoring', { taskId: task.id });
     const { targetFiles, goals } = task.payload;
 
@@ -36,5 +36,6 @@ export class RefactorAgent extends BaseAgent {
       logger.error('[RefactorAgent] Refactoring process failed', { error: error.message });
       throw error;
     }
+    return undefined;
   }
 }

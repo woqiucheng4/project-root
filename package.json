@@ -4,7 +4,7 @@
   "private": true,
   "description": "Production-grade AI SaaS monorepo for AI Autonomous Coding Loop platform",
   "scripts": {
-    "build": "pnpm -r run build",
+    "build": "pnpm -F @repo/database build && pnpm -F @repo/ai-agents build && pnpm -F @repo/workflow build && pnpm -F @repo/core-services build && pnpm -F @repo/ai-runtime build && pnpm -F @repo/cli build && pnpm -F web build",
     "dev": "pnpm -r run dev",
     "test": "pnpm -r run test",
     "lint": "eslint .",

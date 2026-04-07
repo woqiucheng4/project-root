@@ -1,4 +1,26 @@
-import { DevAgent, QAAgent, RefactorAgent, PRAgent, DocAgent, logger, taskQueue, AgentTask } from '@repo/ai-agents';
+import {
+  DevAgent,
+  QAAgent,
+  RefactorAgent,
+  PRAgent,
+  DocAgent,
+  PMAgent,
+  ArchitectAgent,
+  logger,
+  taskQueue,
+  createWorker,
+  type AgentTask,
+  type ArchitectExecuteResult,
+  type PmExecuteResult,
+} from '@repo/ai-agents';
+import type { Job } from 'bullmq';
+import {
+  completePmPrdFromWorker,
+  completePmReplyFromWorker,
+  completeArchitectFromWorker,
+  applyWorkflowSignal,
+  markWorkflowFailed,
+} from '@repo/workflow';
 
 export class AutonomousCodingEngine {
   private isRunning = false;
@@ -9,8 +31,7 @@ export class AutonomousCodingEngine {
   private docAgent = new DocAgent();
 
   /**
-   * Starts all agent workers. They will continuously poll the queue
-   * and process tasks until terminated.
+   * Starts all agent workers. PM / ARCHITECT / WORKFLOW_SIGNAL use DB-aware wrappers.
    */
   public async start() {
     if (this.isRunning) {
@@ -21,7 +42,12 @@ export class AutonomousCodingEngine {
     logger.info('[Engine] Starting Autonomous Coding Environment Loop...');
 
     try {
-      // 1. Start all workers to read tasks from the queue continuously
+      createWorker('PM', async (job: Job<AgentTask>) => this.processPmJob(job));
+      createWorker('ARCHITECT', async (job: Job<AgentTask>) => this.processArchitectJob(job));
+      createWorker('WORKFLOW_SIGNAL', async (job: Job<AgentTask>) => {
+        await applyWorkflowSignal(job.data.payload);
+      });
+
       this.devAgent.startWorker();
       this.qaAgent.startWorker();
       this.refactorAgent.startWorker();
@@ -31,7 +57,6 @@ export class AutonomousCodingEngine {
       this.isRunning = true;
       logger.info('[Engine] All autonomous agents are online and listening to the queue.');
 
-      // Setup a grace shutdown
       process.on('SIGINT', () => this.shutdown());
       process.on('SIGTERM', () => this.shutdown());
     } catch (error: any) {
@@ -40,8 +65,53 @@ export class AutonomousCodingEngine {
     }
   }
 
+  private async processPmJob(job: Job<AgentTask>) {
+    const wfId = job.data.payload?.workflowId as string | undefined;
+    try {
+      const pm = new PMAgent();
+      const out = await pm.execute(job.data);
+      if (!wfId) return out;
+
+      if (job.data.payload?.mode === 'PM_REPLY') {
+        const reply = out as { pmReply?: string };
+        if (reply?.pmReply) {
+          await completePmReplyFromWorker(wfId, reply.pmReply);
+        }
+        return out;
+      }
+
+      const prd = out as PmExecuteResult | void;
+      if (prd && 'content' in prd && 'prdTargetFile' in prd) {
+        await completePmPrdFromWorker(wfId, prd);
+      }
+      return out;
+    } catch (e: any) {
+      if (wfId) {
+        await markWorkflowFailed(wfId, e?.message || 'PM job failed');
+      }
+      throw e;
+    }
+  }
+
+  private async processArchitectJob(job: Job<AgentTask>) {
+    const wfId = job.data.payload?.workflowId as string | undefined;
+    try {
+      const arch = new ArchitectAgent();
+      const out = await arch.execute(job.data);
+      if (wfId && out && typeof out === 'object' && 'content' in out) {
+        await completeArchitectFromWorker(wfId, out as ArchitectExecuteResult);
+      }
+      return out;
+    } catch (e: any) {
+      if (wfId) {
+        await markWorkflowFailed(wfId, e?.message || 'Architect job failed');
+      }
+      throw e;
+    }
+  }
+
   /**
-   * Submit a new coding requirement directly into the autonomous loop.
+   * Legacy: direct DEV queue (skips PM / PRD / architecture gates).
    */
   public async submitTask(requirements: string, context?: any): Promise<string> {
     const taskId = `task-${Date.now()}`;
@@ -50,23 +120,19 @@ export class AutonomousCodingEngine {
       type: 'DEV',
       payload: {
         requirements,
-        context: context || {}
-      }
+        context: context || {},
+      },
     };
 
-    logger.info(`[Engine] Incoming user task: ${taskId}`);
+    logger.info(`[Engine] Incoming legacy DEV task: ${taskId}`);
     await taskQueue.add('DEV', initialJob);
-    
+
     return taskId;
   }
 
-  /**
-   * Gracefully shutdown the engine
-   */
   public async shutdown() {
     logger.info('[Engine] Gracefully shutting down the autonomous coding loop...');
     this.isRunning = false;
-    // For a real production app we would close connections, pause the queue, etc.
     process.exit(0);
   }
 }

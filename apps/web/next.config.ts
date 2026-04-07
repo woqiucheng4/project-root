@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ["@repo/workflow", "@repo/database", "@repo/ai-agents"],
+  serverExternalPackages: ["@prisma/client", "bullmq", "ioredis"],
 };
 
 export default nextConfig;

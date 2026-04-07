@@ -1,22 +1,18 @@
 {
-  "name": "@repo/ai-agents",
+  "name": "@repo/workflow",
   "version": "1.0.0",
+  "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rm -f tsconfig.tsbuildinfo && tsc"
   },
   "dependencies": {
-    "bullmq": "^5.0.0",
-    "js-yaml": "^4.1.1",
-    "openai": "^6.27.0",
-    "uuid": "^13.0.0",
-    "winston": "^3.12.0"
+    "@repo/ai-agents": "workspace:*",
+    "@repo/database": "workspace:*"
   },
   "devDependencies": {
-    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.0.0",
-    "@types/uuid": "^11.0.0",
     "typescript": "^5.4.0"
   }
 }

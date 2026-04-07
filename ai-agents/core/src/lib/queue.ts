@@ -3,16 +3,29 @@ import { logger } from './logger';
 
 export interface AgentTask {
   id: string;
-  type: 'PM' | 'ARCHITECT' | 'DEV' | 'QA' | 'REFACTOR' | 'PR' | 'DOC';
+  type: 'PM' | 'ARCHITECT' | 'DEV' | 'QA' | 'REFACTOR' | 'PR' | 'DOC' | 'WORKFLOW_SIGNAL';
   payload: any;
 }
 
 const redisOptions = {
   host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
+  port: parseInt(process.env.REDIS_PORT || '6379', 10),
 };
 
-export const taskQueue = new Queue<AgentTask>('agent-tasks', { connection: redisOptions });
+let queueSingleton: Queue<AgentTask> | null = null;
+
+/** Lazy queue so importing this module (e.g. during Next.js build) does not open Redis. */
+export function getTaskQueue(): Queue<AgentTask> {
+  if (!queueSingleton) {
+    queueSingleton = new Queue<AgentTask>('agent-tasks', { connection: redisOptions });
+  }
+  return queueSingleton;
+}
+
+export const taskQueue = {
+  add: (name: string, data: AgentTask, opts?: Parameters<Queue<AgentTask>['add']>[2]) =>
+    getTaskQueue().add(name, data, opts),
+};
 
 export function createWorker(name: string, processor: (job: Job<AgentTask>) => Promise<any>) {
   const worker = new Worker<AgentTask>(

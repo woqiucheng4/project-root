@@ -9,9 +9,14 @@ async function bootstrap() {
   // - Runs analysis and generation continually
   await engine.start();
 
-  // Example entrypoint for a task:
-  console.log('\n[Main] Injecting initial seed task into the autonomous loop...');
-  await engine.submitTask('Implement a dark mode toggle for the auth module');
+  if (process.env.RUN_LEGACY_DEV_SEED === '1') {
+    console.log('\n[Main] RUN_LEGACY_DEV_SEED=1 — injecting legacy DEV task...');
+    await engine.submitTask('Implement a dark mode toggle for the auth module');
+  } else {
+    console.log(
+      '\n[Main] Engine ready. Use Web 控制台创建工作流并启动 PM，或设置 RUN_LEGACY_DEV_SEED=1 走旧版直 DEV 演示。'
+    );
+  }
 }
 
 // Start when executed directly

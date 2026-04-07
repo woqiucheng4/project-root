@@ -14,6 +14,6 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const user = await authService.createUser(body);
+  const user = await authService.registerUser(body);
   return NextResponse.json(user);
 }
